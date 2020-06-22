@@ -11,9 +11,3 @@ RUN pip install -r /app/requirements.txt
 
 WORKDIR /app
 
-EXPOSE 6969
-
-RUN ( prefect agent install local > supervisord.conf )
-
-RUN prefect backend server
-#RUN supervisord -c supervisord.conf  --nodaemon
