@@ -12,24 +12,6 @@ services:
      working_dir: /work
      volumes:
       - "./notebooks:/work"
-     environment:
-       PREFECT__SERVER__HOST: ${PREFECT__SERVER__HOST:-prefect-agent}
-       PREFECT__SERVER__PORT: ${PREFECT__SERVER__PORT:-6969}
-       PREFECT__SERVER__UI__HOST: ${PREFECT__SERVER__UI__HOST:-prefect-ui}
-       PREFECT__SERVER__UI__PORT: ${PREFECT__SERVER__UI__PORT:-8080}
-
-
-  prefect-ui:
-    build: ./prefect-ui
-    tty: true
-    networks:
-      - inbound
-    command: sh -c "prefect server start"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-
-
-
 
 
   prefect-agent:
@@ -37,18 +19,11 @@ services:
     tty: true
     networks:
       - inbound
-    command: sh -c "supervisord -c supervisord.conf  --nodaemon"
-    depends_on:
-      - prefect-ui
-    links:
-      - prefect-ui
+    command: sh -c "prefect agent start docker -t <token>"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-    environment:
-      PREFECT__SERVER__HOST: ${PREFECT__SERVER__HOST:-prefect-agent}
-      PREFECT__SERVER__PORT: ${PREFECT__SERVER__PORT:-6969}
-      PREFECT__SERVER__UI__HOST: ${PREFECT__SERVER__UI__HOST:-prefect-ui}
-      PREFECT__SERVER__UI__PORT: ${PREFECT__SERVER__UI__PORT:-8080}
+
+
 
 
 
