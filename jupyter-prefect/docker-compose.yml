@@ -1,0 +1,59 @@
+version: "3"
+services:
+
+  jupyter:
+     image: jupyter/datascience-notebook
+     tty: true
+     networks:
+       - inbound
+     ports:
+       - "8888:8888"
+     command: sh -c "jupyter-notebook"
+     working_dir: /work
+     volumes:
+      - "./notebooks:/work"
+     environment:
+       PREFECT__SERVER__HOST: ${PREFECT__SERVER__HOST:-prefect-agent}
+       PREFECT__SERVER__PORT: ${PREFECT__SERVER__PORT:-6969}
+       PREFECT__SERVER__UI__HOST: ${PREFECT__SERVER__UI__HOST:-prefect-ui}
+       PREFECT__SERVER__UI__PORT: ${PREFECT__SERVER__UI__PORT:-8080}
+
+
+  prefect-ui:
+    build: ./prefect-ui
+    tty: true
+    networks:
+      - inbound
+    command: sh -c "prefect server start"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+
+
+
+
+  prefect-agent:
+    build: ./prefect-agent
+    tty: true
+    networks:
+      - inbound
+    command: sh -c "supervisord -c supervisord.conf  --nodaemon"
+    depends_on:
+      - prefect-ui
+    links:
+      - prefect-ui
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      PREFECT__SERVER__HOST: ${PREFECT__SERVER__HOST:-prefect-agent}
+      PREFECT__SERVER__PORT: ${PREFECT__SERVER__PORT:-6969}
+      PREFECT__SERVER__UI__HOST: ${PREFECT__SERVER__UI__HOST:-prefect-ui}
+      PREFECT__SERVER__UI__PORT: ${PREFECT__SERVER__UI__PORT:-8080}
+
+
+
+networks:
+    inbound:
+
+
+
