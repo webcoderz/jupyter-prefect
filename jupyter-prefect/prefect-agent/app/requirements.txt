@@ -1,4 +1,4 @@
 
-prefect==0.10.1
+prefect==2.20.17
 docker-compose
 supervisor
