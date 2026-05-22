@@ -1,4 +1,4 @@
 
-prefect==0.10.1
+prefect==3.6.28.dev2
 docker-compose
 supervisor
